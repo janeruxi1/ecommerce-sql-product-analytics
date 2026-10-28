@@ -15,7 +15,7 @@ WITH params AS (
   SELECT DATE '2025-09-01' AS start_date, DATE '2025-09-28' AS end_date
 ),
 
-visitors AS (
+test_visitors AS (
   SELECT DISTINCT e.user_id
   FROM {{thelook.events}} AS e
   CROSS JOIN params
@@ -23,23 +23,23 @@ visitors AS (
     AND DATE(e.created_at) BETWEEN params.start_date AND params.end_date
 ),
 
-bought AS (
+buyers AS (
   SELECT
     v.user_id,
     IF(COUNTIF(DATE(o.created_at) BETWEEN p.start_date AND p.end_date
                AND o.status != 'Cancelled') > 0, 1, 0) AS bought
-  FROM visitors AS v
+  FROM test_visitors AS v
   CROSS JOIN params AS p
   LEFT JOIN {{thelook.orders}} AS o ON o.user_id = v.user_id
   GROUP BY v.user_id
 ),
 
-splits AS (
+split_units AS (
   SELECT
     s AS split,
     b.bought,
     MOD(ABS(FARM_FINGERPRINT(CONCAT('aa-', CAST(s AS STRING), ':', CAST(b.user_id AS STRING)))), 2) AS arm
-  FROM bought AS b
+  FROM buyers AS b
   CROSS JOIN UNNEST(GENERATE_ARRAY(1, 200)) AS s
 ),
 
@@ -50,11 +50,11 @@ per_split AS (
     COUNTIF(arm = 1) AS n_t,
     AVG(IF(arm = 0, bought, NULL)) AS conv_c,
     AVG(IF(arm = 1, bought, NULL)) AS conv_t
-  FROM splits
+  FROM split_units
   GROUP BY split
 ),
 
-z AS (
+with_z AS (
   SELECT
     *,
     SAFE_DIVIDE(conv_t - conv_c,
@@ -62,8 +62,8 @@ z AS (
   FROM per_split
 ),
 
-p AS (
-  SELECT *, 1 / (1 + 0.3275911 * ABS(z) / SQRT(2)) AS t FROM z
+with_t AS (
+  SELECT *, 1 / (1 + 0.3275911 * ABS(z) / SQRT(2)) AS t FROM with_z
 ),
 
 p_values AS (
@@ -71,7 +71,7 @@ p_values AS (
     *,
     t * (0.254829592 + t * (-0.284496736 + t * (1.421413741 + t * (-1.453152027 + t * 1.061405429))))
       * EXP(-z * z / 2) AS p_value
-  FROM p
+  FROM with_t
 )
 
 SELECT

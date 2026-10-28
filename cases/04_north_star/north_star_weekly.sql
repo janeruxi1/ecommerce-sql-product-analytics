@@ -26,7 +26,7 @@ WITH params AS (
     28 AS return_window_days                   -- weeks closer than this to data_end are immature
 ),
 
-items AS (
+item_totals AS (
   SELECT
     order_id,
     COUNT(*) AS items,
@@ -37,7 +37,7 @@ items AS (
   GROUP BY order_id
 ),
 
-orders AS (
+order_facts AS (
   SELECT
     o.order_id,
     o.user_id,
@@ -50,12 +50,12 @@ orders AS (
     i.net_revenue,
     i.kept_items
   FROM {{thelook.orders}} AS o
-  JOIN items AS i ON i.order_id = o.order_id
+  JOIN item_totals AS i ON i.order_id = o.order_id
 ),
 
 first_purchase AS (                            -- over the whole history, not just the window
   SELECT user_id, MIN(week) AS first_week
-  FROM orders
+  FROM order_facts
   WHERE status != 'Cancelled'
   GROUP BY user_id
 ),
@@ -73,7 +73,7 @@ weekly AS (
     AVG(o.days_to_deliver) AS avg_days_to_deliver,
     SAFE_DIVIDE(COUNT(DISTINCT IF(o.kept_items > 0 AND f.first_week = o.week, o.user_id, NULL)),
                 COUNT(DISTINCT IF(o.kept_items > 0, o.user_id, NULL))) AS new_buyer_share
-  FROM orders AS o
+  FROM order_facts AS o
   LEFT JOIN first_purchase AS f ON f.user_id = o.user_id
   GROUP BY o.week
 ),

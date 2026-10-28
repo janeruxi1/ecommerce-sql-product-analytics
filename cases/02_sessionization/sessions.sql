@@ -18,7 +18,7 @@ WITH params AS (
   SELECT '20201101' AS start_date, '20210131' AS end_date
 ),
 
-events AS (
+ga4 AS (
   SELECT
     user_pseudo_id,
     event_timestamp AS ts,                                   -- microseconds
@@ -32,7 +32,7 @@ with_gap AS (
   SELECT
     *,
     ts - LAG(ts) OVER (PARTITION BY user_pseudo_id ORDER BY ts) AS gap_us
-  FROM events
+  FROM ga4
 ),
 
 derived AS (
@@ -48,7 +48,7 @@ derived AS (
   CROSS JOIN UNNEST([15, 30, 60]) AS gap_minutes
 ),
 
-derived_sessions AS (
+derived_session_facts AS (
   SELECT
     gap_minutes,
     user_pseudo_id,
@@ -74,7 +74,7 @@ ga_sessions AS (
     ga_session_id,
     COUNT(*) AS events,
     (MAX(ts) - MIN(ts)) / 1000000 AS duration_s
-  FROM events
+  FROM ga4
   WHERE ga_session_id IS NOT NULL
   GROUP BY 1, 2
 ),
@@ -88,7 +88,7 @@ by_threshold AS (
     AVG(IF(d.events = 1, 1, 0)) AS share_one_event,
     AVG(IF(d.ga_sessions_inside = 1, 1, 0)) AS share_matching_one_ga_session,
     ANY_VALUE(g.share_ga_in_one) AS share_ga_sessions_kept_whole
-  FROM derived_sessions AS d
+  FROM derived_session_facts AS d
   JOIN (SELECT gap_minutes, AVG(IF(derived_sessions = 1, 1, 0)) AS share_ga_in_one
         FROM ga_split GROUP BY 1) AS g
     ON g.gap_minutes = d.gap_minutes

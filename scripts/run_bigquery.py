@@ -67,11 +67,19 @@ def main() -> None:
     todo = [q for q in queries() if not args.only or q.case.startswith(args.only)]
 
     # 1. dry run everything first, so nothing is billed if one query is too big
-    sizes = {}
+    sizes, errors = {}, {}
     for q in todo:
-        job = client.query(bigquery_sql(q), job_config=bigquery.QueryJobConfig(dry_run=True, use_query_cache=False))
+        try:
+            job = client.query(bigquery_sql(q),
+                               job_config=bigquery.QueryJobConfig(dry_run=True, use_query_cache=False))
+        except Exception as e:  # report every broken query at once, not just the first
+            errors[q.key] = str(getattr(e, "message", e)).splitlines()[0]
+            print(f"  {q.key}: ERROR {errors[q.key]}")
+            continue
         sizes[q.key] = job.total_bytes_processed
         print(f"  {q.key}: would scan {job.total_bytes_processed / 1e9:.2f} GB")
+    if errors:
+        sys.exit(f"stopped: {len(errors)} quer{'y' if len(errors) == 1 else 'ies'} failed the dry run")
     too_big = [k for k, b in sizes.items() if b > args.max_gb * 1e9]
     if too_big:
         sys.exit(f"stopped: {too_big} would scan more than {args.max_gb} GB (raise --max-gb to allow)")

@@ -57,7 +57,7 @@ order_facts AS (
   GROUP BY o.user_id
 ),
 
-revenue AS (
+revenue_by_user AS (
   SELECT oi.user_id, SUM(oi.sale_price) AS revenue_test
   FROM {{thelook.order_items}} AS oi
   CROSS JOIN params AS p
@@ -78,7 +78,7 @@ units AS (
   FROM assigned AS a
   CROSS JOIN params AS p
   LEFT JOIN order_facts AS f ON f.user_id = a.user_id
-  LEFT JOIN revenue AS r ON r.user_id = a.user_id
+  LEFT JOIN revenue_by_user AS r ON r.user_id = a.user_id
 ),
 
 units_y AS (
@@ -86,7 +86,7 @@ units_y AS (
 ),
 
 -- CUPED: one pooled theta = cov(y, x) / var(x), with x = bought before the test
-theta AS (
+cuped_theta AS (
   SELECT SAFE_DIVIDE(COVAR_SAMP(bought, bought_pre), VAR_SAMP(bought_pre)) AS theta,
          AVG(bought_pre) AS mean_x
   FROM units_y
@@ -102,7 +102,7 @@ by_arm AS (
     AVG(u.had_cancellation) AS cancel, VAR_SAMP(u.had_cancellation) AS cancel_var,
     AVG(u.planted) AS planted_share
   FROM units_y AS u
-  CROSS JOIN theta AS t
+  CROSS JOIN cuped_theta AS t
   GROUP BY u.arm
 ),
 

@@ -24,7 +24,7 @@ events AS (
   WHERE event_date BETWEEN params.start_date AND params.end_date
 ),
 
-sessions AS (
+session_facts AS (
   SELECT
     session_key,
     MIN(device) AS device,                                   -- fixed within a session
@@ -37,7 +37,7 @@ sessions AS (
 -- Each step: the first time it happens at or after the previous step.
 step1 AS (
   SELECT s.session_key, s.device, s.purchased_any_order, MIN(e.ts) AS t1
-  FROM sessions AS s
+  FROM session_facts AS s
   LEFT JOIN events AS e
     ON e.session_key = s.session_key AND e.event_name = 'view_item'
   GROUP BY 1, 2, 3

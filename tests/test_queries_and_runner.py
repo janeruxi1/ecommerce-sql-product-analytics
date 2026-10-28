@@ -119,3 +119,32 @@ def test_coverage_warning():
     spec.loader.exec_module(mod)
     rows = [{"source": "thelook orders", "first_date": "2019-01-06", "last_date": "2025-06-30"}]
     assert "2025-06-30" in mod.check_coverage(rows)[0]
+
+
+@pytest.mark.parametrize("q", queries(), ids=lambda q: q.key)
+def test_no_cte_shares_a_name_with_a_column(q):
+    """BigQuery resolves a bare name to a table before a column: in `SELECT ABS(z) FROM z`
+    the `z` is the whole row of CTE z, a STRUCT, not its column z. DuckDB resolves it the other
+    way, so this mistake passes every DuckDB test; this check catches it."""
+    tree = sqlglot.parse_one(bigquery_sql(q), read="bigquery")
+    ctes = {c.alias for c in tree.find_all(sqlglot.exp.CTE)}
+    names = {c.name for c in tree.find_all(sqlglot.exp.Column)} | {a.alias for a in tree.find_all(sqlglot.exp.Alias)}
+    assert not ctes & names, f"rename these CTEs: {sorted(ctes & names)}"
+
+
+def test_runner_reports_every_broken_query_before_running(monkeypatch, tmp_path, capsys):
+    mod, calls = load_runner(monkeypatch, tmp_path)
+    real_query = sys.modules["google.cloud.bigquery"].Client.query
+
+    def failing(self, sql, job_config):
+        if "GENERATE_ARRAY(1, 200)" in sql or "COVAR_SAMP" in sql:
+            raise ValueError("No matching signature for function ABS\nmore detail")
+        return real_query(self, sql, job_config)
+
+    monkeypatch.setattr(sys.modules["google.cloud.bigquery"].Client, "query", failing)
+    monkeypatch.setattr(sys, "argv", ["run_bigquery.py", "--project", "p"])
+    with pytest.raises(SystemExit, match="2 queries failed"):
+        mod.main()
+    out = capsys.readouterr().out
+    assert "06_ab_readout/aa_check: ERROR No matching signature" in out and "06_ab_readout/ab_readout: ERROR" in out
+    assert False not in calls

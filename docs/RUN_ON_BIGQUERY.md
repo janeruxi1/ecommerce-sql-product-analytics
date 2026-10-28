@@ -19,8 +19,8 @@ terminal in the browser that is already signed in, so no keys are created or dow
 Open **Cloud Shell** (the `>_` icon at the top right of the console) and run:
 
 ```bash
-git clone https://github.com/<your-account>/<this-repository>.git
-cd <this-repository>
+git clone https://github.com/janeruxi1/ecommerce-sql-product-analytics.git
+cd ecommerce-sql-product-analytics
 python3 -m venv ~/casebook-venv && source ~/casebook-venv/bin/activate
 pip install -r requirements.txt google-cloud-bigquery
 
@@ -37,7 +37,7 @@ If Cloud Shell asks to authorize the call, accept: it lets the shell use your ow
 ## 3. Bring the results back
 
 In Cloud Shell, zip the results and download the zip (⋮ menu → *Download*, path
-`<this-repository>/results.zip`):
+`ecommerce-sql-product-analytics/results.zip`):
 
 ```bash
 zip -r results.zip results
