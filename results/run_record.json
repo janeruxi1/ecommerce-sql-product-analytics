@@ -1,0 +1,90 @@
+{
+  "queries": {
+    "00_data_profile/profile": {
+      "bytes_billed": 1021313024,
+      "bytes_processed": 1020707040,
+      "elapsed_seconds": 4.0,
+      "rows": 5,
+      "run_at": "2026-10-28 05:15 UTC",
+      "slot_seconds": 28.9
+    },
+    "01_checkout_funnel/funnel": {
+      "bytes_billed": 1109393408,
+      "bytes_processed": 1109377053,
+      "elapsed_seconds": 5.7,
+      "rows": 20,
+      "run_at": "2026-10-28 05:15 UTC",
+      "slot_seconds": 47.6
+    },
+    "02_sessionization/sessions": {
+      "bytes_billed": 1017118720,
+      "bytes_processed": 1016559490,
+      "elapsed_seconds": 7.7,
+      "rows": 4,
+      "run_at": "2026-10-28 05:15 UTC",
+      "slot_seconds": 177.7
+    },
+    "03_cohort_retention/cohort_matrix": {
+      "bytes_billed": 10485760,
+      "bytes_processed": 3279033,
+      "elapsed_seconds": 0.8,
+      "rows": 312,
+      "run_at": "2026-10-28 05:15 UTC",
+      "slot_seconds": 0.1
+    },
+    "03_cohort_retention/retention_by_source": {
+      "bytes_billed": 20971520,
+      "bytes_processed": 4905375,
+      "elapsed_seconds": 0.8,
+      "rows": 24,
+      "run_at": "2026-10-28 05:15 UTC",
+      "slot_seconds": 0.3
+    },
+    "04_north_star/north_star_weekly": {
+      "bytes_billed": 20971520,
+      "bytes_processed": 9378060,
+      "elapsed_seconds": 1.1,
+      "rows": 104,
+      "run_at": "2026-10-28 05:15 UTC",
+      "slot_seconds": 0.9
+    },
+    "05_revenue_drop/monthly_overview": {
+      "bytes_billed": 1039138816,
+      "bytes_processed": 1038194915,
+      "elapsed_seconds": 4.6,
+      "rows": 3,
+      "run_at": "2026-10-28 05:15 UTC",
+      "slot_seconds": 54.4
+    },
+    "05_revenue_drop/segment_shift_share": {
+      "bytes_billed": 1166016512,
+      "bytes_processed": 1165364384,
+      "elapsed_seconds": 4.5,
+      "rows": 20,
+      "run_at": "2026-10-28 05:15 UTC",
+      "slot_seconds": 52.1
+    },
+    "06_ab_readout/aa_check": {
+      "bytes_billed": 33554432,
+      "bytes_processed": 33023553,
+      "elapsed_seconds": 0.8,
+      "rows": 1,
+      "run_at": "2026-10-28 05:15 UTC",
+      "slot_seconds": 0.4
+    },
+    "06_ab_readout/ab_readout": {
+      "bytes_billed": 39845888,
+      "bytes_processed": 39221188,
+      "elapsed_seconds": 3.5,
+      "rows": 5,
+      "run_at": "2026-10-28 05:15 UTC",
+      "slot_seconds": 47.6
+    }
+  },
+  "totals": {
+    "gb_billed": 5.48,
+    "gb_processed": 5.44,
+    "on_demand_cost_usd": 0.031,
+    "queries": 10
+  }
+}

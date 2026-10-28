@@ -24,8 +24,22 @@ literal, `COUNT(DISTINCT ...)` inside a mapping table, `UNION ALL` of two defini
 
 ## Result
 
-*Filled in from [`results/02_sessionization/sessions.csv`](../../results/02_sessionization/) after
-the BigQuery run.*
+From [`results/02_sessionization/sessions.csv`](../../results/02_sessionization/sessions.csv):
+
+| Definition | Sessions | vs GA4 | Rebuilt sessions holding exactly one GA4 session | GA4 sessions kept whole |
+|---|---|---|---|---|
+| GA4 `ga_session_id` | 360,129 | | | |
+| Inactivity > 15 min | 373,411 | +3.7% | 99.4% | 96.1% |
+| Inactivity > 30 min | 355,601 | −1.3% | 98.7% | 99.94% |
+| Inactivity > 60 min | 347,670 | −3.5% | 96.6% | 99.98% |
+
+* **A 30-minute rule rebuilds GA4's sessions almost exactly**: 1.3% fewer sessions, 98.7% of
+  rebuilt sessions map to one GA4 session, and 99.94% of GA4 sessions stay whole. That is the
+  rule GA4 itself uses; the remaining gap comes from GA4 also starting sessions on other triggers.
+* **The threshold matters at the margin.** Moving from 30 to 15 minutes adds 3.7% sessions, and to
+  60 minutes removes 3.5%, which moves every per-session rate by the same amount in the other
+  direction. A conversion rate quoted without its session definition can be off by several
+  percent.
 
 ## Checks and pitfalls
 

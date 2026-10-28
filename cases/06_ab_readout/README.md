@@ -46,7 +46,36 @@ deviation about 1.
 
 ## Result
 
-*Filled in from [`results/06_ab_readout/`](../../results/06_ab_readout/) after the BigQuery run.*
+From [`results/06_ab_readout/`](../../results/06_ab_readout/) (2,341 logged-in visitors,
+1–28 September 2025):
+
+| Metric | Control | Treatment | Difference (95% CI) | p |
+|---|---|---|---|---|
+| Sample ratio (share in treatment) | 50% | 49.7% | | 0.76 |
+| Conversion | 80.2% | 83.8% | +3.6 pts (+0.5 to +6.7) | 0.023 |
+| Conversion, CUPED-adjusted | | | +3.6 pts (+0.6 to +6.7) | 0.019 |
+| Revenue per visitor | $70.31 | $72.91 | +$2.60 (−$5.07 to +$10.28) | 0.51 |
+| Guardrail: visitors with a cancelled order | 17.0% | 13.6% | −3.4 pts | 0.022 |
+
+**The readout says "significant win". It is wrong, and the setup shows why.**
+
+* **The planted truth is +0.26 points.** Only about 20% of these visitors had not bought, so
+  planting conversions in 2% of them adds 0.26 points. The interval (+0.5 to +6.7) does not contain
+  it: this split is a false positive.
+* **The test could never have seen the planted effect.** Its minimum detectable effect at 80% power
+  is 4.4 points, 17 times the true effect. When a test is this underpowered, a significant result
+  is mostly noise and overstates the effect (here 14-fold). The power check should be read before
+  the p-value.
+* **The pipeline itself is sound.** The A/A check on the same visitors flagged 4.0% of 200 random
+  splits at p < 0.05 (expected 5% ± 3.0), with z-scores of mean −0.002 and standard deviation
+  1.005. So the false positive is the 1-in-20 chance any test carries, not a bug. The guardrail
+  moving the other way by about the same amount is most likely the same chance imbalance seen
+  twice, since a visitor whose order was cancelled is less likely to count as a buyer.
+* **A data lesson:** 46% of theLook events have no user id, and the logged-in ones mostly belong to
+  people who order, so 80% of "visitors" convert. A realistic test here would randomise sessions,
+  including anonymous ones, which would also give it the sample size it lacks.
+* **CUPED barely helped** (interval 2.5% narrower): whether a visitor bought in the 90 days before
+  says little about whether they buy now in this data.
 
 ## Checks and pitfalls
 
@@ -55,5 +84,6 @@ deviation about 1.
   are checked against the exact normal p-value.
 * **CUPED narrows the interval without moving the estimate** when the pre-period predicts the
   outcome; the test checks both.
-* **Planting is a check of the method, not a result.** The conversion lift reported here is the
-  one that was planted; the point is that the readout finds it, with the right uncertainty.
+* **Planting is a check of the method, not a result.** Here it showed something more useful than a
+  clean recovery: a significant result that the known truth, the power calculation and the A/A
+  check all mark as noise.

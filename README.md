@@ -10,16 +10,25 @@ from raw events, who comes back, what number to steer by, why revenue fell, and 
 won. Every query is also run on small tables with hand-computed answers on every push, so the
 SQL is tested, not just written.
 
+**Two findings worth reading first.** The January revenue drop ([case 05](cases/05_revenue_drop/))
+is partly a tracking failure: a quarter of January purchases arrived without revenue, which
+explains most of the apparent fall in basket size. And the A/B readout ([case 06](cases/06_ab_readout/))
+returns a "significant" win that a planted ground truth, a power calculation and an A/A check all
+show to be noise.
+
+The full run on BigQuery scanned 5.44 GB in ten queries (well inside the free 1 TiB a month;
+$0.03 at on-demand prices). Run record: [`results/run_record.json`](results/run_record.json).
+
 ## The cases
 
 | # | Question | Data | SQL techniques | Result |
 |---|---|---|---|---|
-| [01](cases/01_checkout_funnel/) | Where do sessions drop out of checkout, and is mobile worse? | GA4 sample | `UNNEST` of nested params, ordered funnel with inequality joins, `ROLLUP` | *after the run* |
-| [02](cases/02_sessionization/) | Can sessions be rebuilt from timestamps, and how much does the threshold matter? | GA4 sample | `LAG`, running `SUM` with a `RANGE` frame, `UNNEST` of an array literal | *after the run* |
-| [03](cases/03_cohort_retention/) | Who orders again 1–12 months later, by acquisition channel? | theLook | first-touch cohorts, `DATE_DIFF` in months, `GENERATE_ARRAY` grid, `GROUPING SETS` | *after the run* |
-| [04](cases/04_north_star/) | What weekly number should the team steer by, and what must not get worse? | theLook | metric tree, named `WINDOW` with trailing frames, `LAG`, maturity flag | *after the run* |
-| [05](cases/05_revenue_drop/) | Why did revenue fall in January? | GA4 sample | data-quality checks, exact log split of drivers, shift-share (volume / mix / rate), `QUALIFY` | *after the run* |
-| [06](cases/06_ab_readout/) | Did the checkout test win, and can the readout be trusted? | theLook | hash randomisation, z-tests and CUPED in SQL, erfc p-values, 200-split A/A with `GENERATE_ARRAY` | *after the run* |
+| [01](cases/01_checkout_funnel/) | Where do sessions drop out of checkout, and is mobile worse? | GA4 sample | `UNNEST` of nested params, ordered funnel with inequality joins, `ROLLUP` | 78.6% of sessions never view a product; mobile converts as well as desktop; 41.5% of purchasing sessions skip a tracked step |
+| [02](cases/02_sessionization/) | Can sessions be rebuilt from timestamps, and how much does the threshold matter? | GA4 sample | `LAG`, running `SUM` with a `RANGE` frame, `UNNEST` of an array literal | A 30-minute rule rebuilds GA4's 360,129 sessions within 1.3%; 15 or 60 minutes moves the count by 3.5–3.7% |
+| [03](cases/03_cohort_retention/) | Who orders again 1–12 months later, by acquisition channel? | theLook | first-touch cohorts, `DATE_DIFF` in months, `GENERATE_ARRAY` grid, `GROUPING SETS` | Only 1.6–1.8% of customers reorder in any later month, flat to month 12; no channel differs beyond noise |
+| [04](cases/04_north_star/) | What weekly number should the team steer by, and what must not get worse? | theLook | metric tree, named `WINDOW` with trailing frames, `LAG`, maturity flag | Weekly active buyers +49% in 2025 with orders per buyer and net revenue per order flat; guardrails held |
+| [05](cases/05_revenue_drop/) | Why did revenue fall in January? | GA4 sample | data-quality checks, exact log split of drivers, shift-share (volume / mix / rate), `QUALIFY` | Revenue −64.3%: a quarter of January purchases lost their revenue tag, conversion fell site-wide, segment mix explains ~0 |
+| [06](cases/06_ab_readout/) | Did the checkout test win, and can the readout be trusted? | theLook | hash randomisation, z-tests and CUPED in SQL, erfc p-values, 200-split A/A with `GENERATE_ARRAY` | A "significant" +3.6-point win that is a false positive: planted truth +0.26, MDE 4.4; A/A false-positive rate 4.0% |
 
 Each case folder has the query (`.sql`, with comments explaining every step) and a write-up:
 the question, why it matters, the approach, the result, and the checks and pitfalls.
@@ -38,9 +47,12 @@ text runs two ways:
   everything, a revenue change whose parts must add up. The A/B readout is compared with an
   independent pandas implementation to 1e-9.
 
-Other checks: every file is a single read-only `SELECT` that parses as BigQuery SQL, reads only
-the public tables, and the runner dry-runs every query and stops before spending anything if one
-would scan more than a set limit.
+Other checks: every file is a single read-only `SELECT` that parses as BigQuery SQL and reads only
+the public tables; no CTE shares a name with a column (BigQuery resolves the table first, DuckDB
+the column, so that mistake would pass the DuckDB tests and fail on BigQuery: the first dry run
+caught exactly this); the runner dry-runs every query and stops before spending anything if one
+would scan more than a set limit; and every number quoted in this README and the case write-ups is
+checked against the files in `results/`.
 
 ## Data
 
@@ -85,7 +97,7 @@ python scripts/print_query.py 05_revenue_drop/segment_shift_share    # one query
 │   ├── run_bigquery.py        # dry-run, cap, run, save
 │   └── print_query.py         # print a query with the real table names
 ├── src/casebook/sql.py        # load queries, fill in table names, translate to DuckDB
-├── tests/                     # known-answer tables for every case; query and runner checks
+├── tests/                     # known-answer tables for every case; query, runner and reported-number checks
 └── docs/RUN_ON_BIGQUERY.md
 ```
 

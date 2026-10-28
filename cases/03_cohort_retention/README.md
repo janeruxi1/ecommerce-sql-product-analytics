@@ -26,8 +26,19 @@ followed to December 2025. Cancelled orders do not count as purchases.
 
 ## Result
 
-*Filled in from [`results/03_cohort_retention/`](../../results/03_cohort_retention/) after the
-BigQuery run.*
+From [`results/03_cohort_retention/`](../../results/03_cohort_retention/) (24 monthly cohorts,
+20,195 customers):
+
+* **Few customers come back, and the rate barely changes with time.** Pooled over cohorts, 1.7%
+  of customers order again in month 1, 1.6% in month 3, 1.6% in month 6 and 1.8% in month 12. A
+  real store's curve usually falls steeply after the first month; this flat curve is a sign of
+  theLook's generator, which draws repeat orders at a constant rate.
+* **No channel retains detectably better.** Month-1 retention ranges from 1.5% (Search) to 2.4%
+  (Display), but Display's 95% interval is ±1.0 point on 826 customers, so every channel overlaps
+  the all-channel 1.7%. Search brings 69% of new customers (14,001 of 20,195), so any retention
+  programme is mostly a Search-customer programme.
+* **What I'd tell a team:** with repeat purchase this rare, growth here comes from acquisition;
+  test a second-order incentive before investing in retention by channel.
 
 ## Checks and pitfalls
 

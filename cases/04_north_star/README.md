@@ -26,8 +26,29 @@ history, `DATE_TRUNC(..., WEEK(MONDAY))`, `LAG` for 4-week change, a named `WIND
 
 ## Result
 
-*Filled in from [`results/04_north_star/north_star_weekly.csv`](../../results/04_north_star/) after
-the BigQuery run.*
+From [`results/04_north_star/north_star_weekly.csv`](../../results/04_north_star/north_star_weekly.csv)
+(104 weeks):
+
+| Weekly average | 2024 | 2025 |
+|---|---|---|
+| **Active buyers (north star)** | **272.9** | **406.5** |
+| Orders per buyer | 1.00 | 1.00 |
+| Net revenue per order | $86.01 | $85.87 |
+| Net revenue | $23,499 | $34,978 |
+| Cancellation rate | 15.1% | 14.9% |
+| Item return rate | 11.5% | 11.7% |
+| Days to deliver | 3.96 | 3.96 |
+| New-buyer share | 71.4% | 65.1% |
+
+* **All of the growth is more buyers.** Active buyers rose 49% from 2024 to 2025 while orders per
+  buyer and net revenue per order stayed flat, so the metric tree puts the whole net-revenue gain
+  on the top branch.
+* **Guardrails held.** Cancellations, returns and delivery time are unchanged year on year. The
+  falling new-buyer share is expected as the base of past buyers grows, not a warning.
+* **The alert rule is too sensitive as built.** It flagged 6 of 416 guardrail-weeks (one return
+  spike, one slow-delivery week, four low new-buyer weeks), several times what a true 3-sigma rule
+  would give, because a standard deviation from 12 weeks is itself noisy. In production I would
+  set the threshold by back-testing it to a target of about one false alarm a quarter.
 
 ## Checks and pitfalls
 

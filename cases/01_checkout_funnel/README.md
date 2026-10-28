@@ -28,8 +28,28 @@ specific fix (for example a mobile checkout form) instead of a general one.
 
 ## Result
 
-*Filled in from [`results/01_checkout_funnel/funnel.csv`](../../results/01_checkout_funnel/) after
-the BigQuery run.*
+From [`results/01_checkout_funnel/funnel.csv`](../../results/01_checkout_funnel/funnel.csv)
+(360,129 sessions, November 2020 – January 2021):
+
+| Step | Sessions reaching it | Rate from previous step |
+|---|---|---|
+| Session | 360,129 | |
+| View a product | 77,020 | 21.4% |
+| Add to cart | 15,167 | 19.7% |
+| Begin checkout | 5,416 | 35.7% |
+| Purchase | 2,834 | 52.3% |
+
+* **The big losses are before checkout.** 78.6% of sessions never view a product, and 80.3% of
+  the sessions that do view one never add it to cart. Once a shopper begins checkout, about half
+  finish. The product-page-to-cart step is where a change would move the most sessions.
+* **Mobile is not worse.** Every step rate is within about 2 points across devices. From checkout to
+  purchase, mobile converts 53.4% against desktop's 51.5%, a difference of 1.9 points with a
+  standard error of 1.4 points: not distinguishable. A mobile-specific checkout project is not
+  supported by this data.
+* **Tracking gap.** 4,848 sessions recorded a purchase, but only 2,834 passed every tracked step in
+  order: 41.5% of purchasing sessions skipped a step (for example a purchase with no
+  `begin_checkout`). Before trusting step-level rates in a real store, that gap needs explaining;
+  in this sample it is partly Google's obfuscation.
 
 ## Checks and pitfalls
 
