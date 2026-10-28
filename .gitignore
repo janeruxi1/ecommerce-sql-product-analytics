@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.venv/
+.vscode/
+*.egg-info/
+results.zip
+
+# Private notes (not pushed to GitHub)
+notes/
