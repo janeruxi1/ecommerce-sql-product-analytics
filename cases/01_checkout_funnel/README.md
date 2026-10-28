@@ -28,6 +28,8 @@ specific fix (for example a mobile checkout form) instead of a general one.
 
 ## Result
 
+![Funnel: 360,129 sessions, 77,020 view a product, 15,167 add to cart, 5,416 begin checkout, 2,834 purchase](../../docs/figures/01_funnel.png)
+
 From [`results/01_checkout_funnel/funnel.csv`](../../results/01_checkout_funnel/funnel.csv)
 (360,129 sessions, November 2020 – January 2021):
 
@@ -42,7 +44,7 @@ From [`results/01_checkout_funnel/funnel.csv`](../../results/01_checkout_funnel/
 * **The big losses are before checkout.** 78.6% of sessions never view a product, and 80.3% of
   the sessions that do view one never add it to cart. Once a shopper begins checkout, about half
   finish. The product-page-to-cart step is where a change would move the most sessions.
-* **Mobile is not worse.** Every step rate is within about 2 points across devices. From checkout to
+* **Mobile is not worse.** Every step rate is within 2.5 points across devices. From checkout to
   purchase, mobile converts 53.4% against desktop's 51.5%, a difference of 1.9 points with a
   standard error of 1.4 points: not distinguishable. A mobile-specific checkout project is not
   supported by this data.

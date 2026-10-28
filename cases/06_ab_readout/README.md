@@ -46,6 +46,8 @@ deviation about 1.
 
 ## Result
 
+![A/B estimate +3.6 points with a 95% interval that excludes the planted truth of +0.26 points](../../docs/figures/06_ab_readout.png)
+
 From [`results/06_ab_readout/`](../../results/06_ab_readout/) (2,341 logged-in visitors,
 1–28 September 2025):
 

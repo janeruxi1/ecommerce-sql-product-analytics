@@ -26,6 +26,8 @@ history, `DATE_TRUNC(..., WEEK(MONDAY))`, `LAG` for 4-week change, a named `WIND
 
 ## Result
 
+![Weekly active buyers, 2024 to 2025, rising from an average of 273 to 407, with six weeks flagged by a guardrail](../../docs/figures/04_north_star.png)
+
 From [`results/04_north_star/north_star_weekly.csv`](../../results/04_north_star/north_star_weekly.csv)
 (104 weeks):
 

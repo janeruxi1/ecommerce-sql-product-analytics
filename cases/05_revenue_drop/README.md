@@ -27,6 +27,8 @@ top-10 list, `UNION ALL` to stack dimensions.
 
 ## Result
 
+![Share of the January revenue fall explained by each driver; a quarter is purchases recorded without revenue](../../docs/figures/05_revenue_drop.png)
+
 From [`results/05_revenue_drop/`](../../results/05_revenue_drop/):
 
 | | November 2020 | December 2020 | January 2021 |
@@ -42,7 +44,7 @@ From [`results/05_revenue_drop/`](../../results/05_revenue_drop/):
   ($68.61 to $63.44), not the 28% the raw numbers show. Most of the drop in basket size is a data
   problem, and the first action is to confirm the purchase tag, not to change prices.
 * **The real drop is conversion.** Revenue fell 64.3% from December. Split exactly on a log scale,
-  conversion explains 51% of the fall, revenue per purchase 32% (mostly the tracking gap above),
+  conversion explains 51% of the fall, revenue per purchase 32% (24 points of it the missing revenue above),
   sessions 12% and purchases per purchasing session 6%. January's conversion is also 37% below
   November's, so this is more than the end of holiday shopping.
 * **It is everywhere, not in one segment.** In the shift-share split the mix effect is close to

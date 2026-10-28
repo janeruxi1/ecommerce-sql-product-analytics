@@ -4,4 +4,5 @@ sqlglot>=25,<31
 pandas>=2.1,<4
 pyarrow>=14,<30
 numpy>=1.26,<3
+matplotlib>=3.8,<4      # scripts/make_figures.py
 pytest>=8,<10

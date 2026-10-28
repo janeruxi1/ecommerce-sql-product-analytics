@@ -16,6 +16,11 @@ explains most of the apparent fall in basket size. And the A/B readout ([case 06
 returns a "significant" win that a planted ground truth, a power calculation and an A/A check all
 show to be noise.
 
+<p>
+  <img src="docs/figures/05_revenue_drop.png" alt="Share of the January revenue fall explained by each driver: lower conversion 51%, purchases recorded without revenue 24%, fewer sessions 12%, smaller baskets 8%, fewer purchases per buying session 6%" width="49%">
+  <img src="docs/figures/06_ab_readout.png" alt="A/B estimate of +3.6 points with a 95% interval from +0.5 to +6.7, against a planted truth of +0.26 points and a 4.4-point minimum detectable effect" width="49%">
+</p>
+
 The full run on BigQuery scanned 5.44 GB in ten queries (well inside the free 1 TiB a month;
 $0.03 at on-demand prices). Run record: [`results/run_record.json`](results/run_record.json).
 
@@ -95,10 +100,11 @@ python scripts/print_query.py 05_revenue_drop/segment_shift_share    # one query
 ├── results/                   # query outputs from BigQuery + run record (bytes, timings)
 ├── scripts/
 │   ├── run_bigquery.py        # dry-run, cap, run, save
-│   └── print_query.py         # print a query with the real table names
+│   ├── print_query.py         # print a query with the real table names
+│   └── make_figures.py        # draw docs/figures/ from results/
 ├── src/casebook/sql.py        # load queries, fill in table names, translate to DuckDB
 ├── tests/                     # known-answer tables for every case; query, runner and reported-number checks
-└── docs/RUN_ON_BIGQUERY.md
+└── docs/                      # RUN_ON_BIGQUERY.md, figures/
 ```
 
 ## Limitations
